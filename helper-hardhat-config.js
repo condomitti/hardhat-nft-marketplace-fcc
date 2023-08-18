@@ -23,6 +23,10 @@ const networkConfig = {
     },
 };
 
+const frontEndContractsFile =
+    "../nextjs-nft-marketplace-thegraph-fcc/constants/networkMapping.json";
+const frontEndAbiLocation = "../nextjs-nft-marketplace-thegraph-fcc/constants/";
+
 const DECIMALS = "18";
 const INITIAL_PRICE = "200000000000000000000";
 const developmentChains = ["hardhat", "localhost"];
@@ -32,4 +36,6 @@ module.exports = {
     developmentChains,
     DECIMALS,
     INITIAL_PRICE,
+    frontEndAbiLocation,
+    frontEndContractsFile,
 };
