@@ -2,6 +2,7 @@ const { assert, expect } = require("chai");
 const { network, deployments, ethers } = require("hardhat");
 const { developmentChains } = require("../../helper-hardhat-config");
 const { getNamedAccounts } = require("hardhat");
+const { describe } = require("node:test");
 
 !developmentChains.includes(network.name)
     ? describe.skip
@@ -41,5 +42,28 @@ const { getNamedAccounts } = require("hardhat");
               await expect(nftMarketplace.buyItem(basicNft.address, TOKEN_ID)).to.be.revertedWith(
                   "NftMarketplace__NotListed",
               );
+          });
+
+          describe("Withdraw", function () {
+              it("cannot withdraw when there are no proceeds", async () => {
+                  await expect(nftMarketplace.withdrawProceeds()).to.be.revertedWith(
+                      "NftMarketplace__NoProceeds",
+                  );
+              });
+
+              it("withdraw proceeds", async () => {
+                  // account0 lists nft
+                  // account1 buys it
+                  // account0 withdraws
+                  // account0's proceedings should now be 0
+                  await nftMarketplace.listItem(basicNft.address, TOKEN_ID, PRICE);
+                  const playerConnectedNftMarketplace = nftMarketplace.connect(player);
+                  await playerConnectedNftMarketplace.buyItem(basicNft.address, TOKEN_ID, {
+                      value: PRICE,
+                  });
+                  await nftMarketplace.withdrawProceeds();
+                  const account0Proceeds = await nftMarketplace.getProceeds(deployer.address);
+                  assert(account0Proceeds == 0);
+              });
           });
       });
